@@ -1,0 +1,10 @@
+(in-package :sysdef-user)
+
+(define-system :mudballs-presenter (serial-system)
+  (:author "Sean Ross")
+  (:maintainer "Sean Ross")
+  (:version 0 1)
+  (:components "package" "setup" "uploader")
+  (:keywords "releaser" "generator" "mudballs")
+  (:needs :cl-fad :ironclad :alexandria)
+  (:documentation "Presenter providers a system which is used to create and release projects on the mudballs server. This also contains code for generating a single system definition file which is then provided from mudballs.com"))
