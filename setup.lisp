@@ -242,7 +242,8 @@ form which is a define-system-template whose first argument is name= the name of
   (let ((new-sysdef-code (create-sysdef-code *root-directory* url contact)))
     (when (valid-sysdef-file-p new-sysdef-code :errorp errorp)
       (with-open-file (outs (make-pathname :version :newest :defaults output)
-                            :direction :output :if-exists :rename)
+                            :direction :output :if-exists :rename
+                            :external-format #-lispworks :utf8 #+lispworks :utf-8)
         (write-string new-sysdef-code outs)
         t))))
 
