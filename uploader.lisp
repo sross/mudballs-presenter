@@ -158,7 +158,7 @@ a solution found to deliver the systems
         (handler-bind ((error (lambda (-)
                                 (delete-directory-and-files (project-version-path (name-of project) version)))))
           (release))))))
-        
+
 
 (defun ensure-md5sum (sysdef-form file)
   (let ((md5sum (md5sum-file file)))

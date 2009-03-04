@@ -237,23 +237,19 @@ form which is a define-system-template whose first argument is name= the name of
        (load stream)
        t))))
 
-
 (defun release-sysdef-file (output url contact &key (errorp nil))
   (let ((new-sysdef-code (create-sysdef-code *root-directory* url contact)))
     (when (valid-sysdef-file-p new-sysdef-code :errorp errorp)
       (with-open-file (outs (make-pathname :version :newest :defaults output)
-                            :direction :output :if-exists :rename
-                            :external-format #-lispworks :utf8 #+lispworks :utf-8)
+                            :direction :output :if-exists :rename)
         (write-string new-sysdef-code outs)
         t))))
 
-;(release-sysdef-file "/tmp/sysdef.lisp"  "http://mudballs.com" "Sean Ross" :errorp t)
-      
+;(release-sysdef-file "/tmp/sysdef.lisp"  "http://mudballs.com" "sean@mudballs.com" :errorp t)
 
 
 #|
 (defparameter *code* (print (create-sysdef-code "~/work/mudballs/" "http://mudballs.com/" "sean@mudballs.com"))
-
 |#
 
 ;; EOF
