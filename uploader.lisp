@@ -183,12 +183,12 @@ a solution found to deliver the systems
 #|
 (in-package :sysdef-user)
 
-(mudballs-presenter::release-system '(MB.SYSDEF:DEFINE-SYSTEM :TRIVIAL-GRAY-STREAMS
-                                         (SERIAL-SYSTEM)
-                                       (:VERSION 2008 11 2)
-                                       (:COMPONENTS "package" "mixin"))
-                                    "/tmp/trivial-gray-streams.2008.11.2.mb")
-                                    "/tmp/mudballs.0.3.0.mb")
+(mudballs-presenter::release-system '(define-system :installer (serial-system)
+                                       (:version 0 2 1)
+                                       (:components "package" "installer")
+                                       (:needs :drakma :mudballs :puri :cl-ppcre :md5 :gzip-stream :archive :alexandria :cl-fad))
+                                    "~/installer.0.2.1.mb")
+
 
 (add-project "series"
              "http://sourceforge.net/mail/?group_id=3235"

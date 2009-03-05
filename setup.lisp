@@ -263,10 +263,10 @@ form which is a define-system-template whose first argument is name= the name of
         (archive:do-archive-entries (entry archive) 
           (archive:extract-entry archive entry))))))
 
-;(create-mudballs-release "mudballs.com" '("official") "sross@mudballs.com" :root "~/tmp/")
+;(mudballs-presenter::create-mudballs-release "mudballs.com" '("official") "sross@mudballs.com" :root "~/tmp/")
 
 (defun create-sysdef-file (root host url-dir-list contact)
-  (release-sysdef-file (merge-pathnames (make-pathname :directory (cons :relative url-dir-list) :name "mudballs" :type "lisp")
+  (release-sysdef-file (merge-pathnames (make-pathname :directory (list* :relative host url-dir-list) :name "mudballs" :type "lisp")
                                         (relative-directory root "mudballs" "system-definitions"))
                        (format nil "http://~A/~A" host (namestring (make-pathname :directory (cons :relative url-dir-list))))
                        contact
