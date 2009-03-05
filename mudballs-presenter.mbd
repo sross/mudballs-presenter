@@ -6,6 +6,6 @@
   (:version 0 2)
   (:components "package" "setup" "uploader")
   (:keywords "releaser" "generator" "mudballs")
-  (:needs :cl-fad :ironclad :alexandria)
+  (:needs :cl-fad :ironclad :alexandria :gzip-stream :archive)
   (:documentation "Presenter providers a system which is used to create and release projects on the mudballs server. This also contains code for generating a single system definition file which is then provided from mudballs.com")
   (:config-file "~;.mudballs-presenter.lisp"))
