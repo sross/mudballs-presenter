@@ -256,7 +256,7 @@ form which is a define-system-template whose first argument is name= the name of
     (copy-in-system root core))
   (create-sysdef-file root host url-dir-list contact))
 
-(create-mudballs-release "mudballs.com" '("official") "sross@mudballs.com" :root "~/tmp/")
+;(create-mudballs-release "mudballs.com" '("official") "sross@mudballs.com" :root "~/tmp/")
 
 (defun extract-tarball (tarball target-dir)
   (gzip-stream:with-open-gzip-file (ins tarball)
