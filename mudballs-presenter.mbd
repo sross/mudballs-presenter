@@ -3,7 +3,7 @@
 (define-system :mudballs-presenter (serial-system)
   (:author "Sean Ross")
   (:maintainer "Sean Ross")
-  (:version 0 1)
+  (:version 0 2)
   (:components "package" "setup" "uploader")
   (:keywords "releaser" "generator" "mudballs")
   (:needs :cl-fad :ironclad :alexandria)

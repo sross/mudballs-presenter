@@ -183,7 +183,8 @@ form which is a define-system-template whose first argument is name= the name of
 ;;; CREATION OF THE SYSTEM DEFINITION FILE
 (defun create-sysdef-code (root url contact)
   (with-output-to-string (output)
-    (let ((projects (collect-projects root)))
+    (let ((projects (collect-projects root))
+          (*package* (find-package :sysdef-user)))
       (format output "~&~S~&~%~%" *package-form*)
       (add-default-headers root output)
       (terpri output)
@@ -238,6 +239,7 @@ form which is a define-system-template whose first argument is name= the name of
        t))))
 
 (defun release-sysdef-file (output url contact &key (errorp nil))
+  (ensure-directories-exist output)
   (let ((new-sysdef-code (create-sysdef-code *root-directory* url contact)))
     (when (valid-sysdef-file-p new-sysdef-code :errorp errorp)
       (with-open-file (outs (make-pathname :version :newest :defaults output)
@@ -245,7 +247,92 @@ form which is a define-system-template whose first argument is name= the name of
         (write-string new-sysdef-code outs)
         t))))
 
-;(release-sysdef-file "/tmp/sysdef.lisp"  "http://mudballs.com" "sean@mudballs.com" :errorp t)
+
+(defun create-mudballs-release (host url-dir-list contact &key (root *default-pathname-defaults*))
+  "Creates a mudballs directory in ROOT from the latest core systems."
+  (create-mudball-directory-structure root)
+  (copy-default-files root)
+  (dolist (core (core-systems))
+    (copy-in-system root core))
+  (create-sysdef-file root host url-dir-list contact))
+
+(create-mudballs-release "mudballs.com" '("official") "sross@mudballs.com" :root "~/tmp/")
+
+(defun extract-tarball (tarball target-dir)
+  (gzip-stream:with-open-gzip-file (ins tarball)
+    (archive:with-open-archive (archive ins)
+      (let ((*default-pathname-defaults* (pathname target-dir)))
+        (archive:do-archive-entries (entry archive) 
+          (archive:extract-entry archive entry))))))
+
+(defun create-sysdef-file (root host url-dir-list contact)
+  (release-sysdef-file (merge-pathnames (make-pathname :directory (cons :relative url-dir-list) :name "mudballs" :type "lisp")
+                                        (relative-directory root "mudballs" "system-definitions"))
+                       (format nil "http://~A/~A" host (namestring (make-pathname :directory (cons :relative url-dir-list))))
+                       contact
+                       :errorp t))
+
+(defun copy-in-system (root system-name)
+  (let* ((system (mb:find-system system-name))
+         (system-root (merge-pathnames (enough-namestring (sysdef:component-pathname system)
+                                                          sysdef:*systems-path*)
+                                       (relative-directory root "mudballs" "systems")))
+         (mudball-file (project-mudball-file (make-instance 'project :path (project-path (string-downcase system-name)))
+                                             (sysdef::version-string system))))
+    (assert (probe-file mudball-file))
+    (ensure-directories-exist system-root)
+    (format t "extract ~A to ~A~%" mudball-file system-root)
+    (extract-tarball mudball-file system-root)))
+
+(defun core-system-mixins  ()
+  (remove-duplicates (mapcar 'sysdef:name-of (sysdef:systems-matching #'(lambda (x) (typep x 'sysdef-user::core-system-mixin))))))
+
+(defun core-systems ()
+  (let ((sysdef::*in-find-system* t))
+    (labels ((all-dependencies (sys)
+               (remove-duplicates (mapcar 'sysdef:component-of (sysdef::needs-of (sysdef:find-system sys)))))
+
+             (process-one (system)
+               (cons system (mapcan #'process-one (all-dependencies system)))))
+    
+      (delete-duplicates (mapcan #'process-one (core-system-mixins))))))
+
+(defun relative-directory (root &rest names)
+  (merge-pathnames (make-pathname :directory `(:relative ,@names))
+                   root))
+
+(defun create-mudball-directory-structure (root)
+  (ensure-directories-exist (relative-directory root "mudballs"))
+  (ensure-directories-exist (relative-directory root "mudballs" "documentation"))
+  (ensure-directories-exist (relative-directory root "mudballs" "system-definitions"))
+  (ensure-directories-exist (relative-directory root "mudballs" "systems"))
+  (ensure-directories-exist (relative-directory root "mudballs" "tmp"))
+  (ensure-directories-exist (relative-directory root "mudballs" "utils")))
+   
+
+(defun copy-default-files (to)
+  (copy-file (merge-pathnames (make-pathname :directory '(:relative "files") :name "boot" :type "lisp")
+                              *root-directory*)
+             (make-pathname :name "boot" :type "lisp"
+                            :defaults (relative-directory to "mudballs")))
+  (copy-directory
+   (relative-directory *root-directory* "files" "mb-artifacts")
+   (relative-directory to "mudballs" "documentation" "mb-artifacts"))
+
+  (copy-directory
+   (relative-directory *root-directory* "files" "utils")
+   (relative-directory to "mudballs" "utils")))
+
+
+(defun copy-directory (from to)
+  (walk-directory from
+                  #'(lambda (x)
+                      (let ((destination (merge-pathnames (enough-namestring x from)
+                                                          to)))
+                        (ensure-directories-exist destination)
+                        (copy-file x destination)))))
+
+;(release-sysdef-file "/tmp/sysdef.lisp"  "http://mudballs.com/official/" "sean@mudballs.com" :errorp t)
 
 
 #|

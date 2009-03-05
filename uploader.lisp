@@ -181,14 +181,17 @@ a solution found to deliver the systems
 
 
 #|
-(release-system '(define-system :series (serial-system)
-                   (:version 2 2 9)
-                   (:components "s-package" "s-code"
-                    (documentation module
-                                   (:directory nil)
-                                   (:default-component-class static-file)
-                                   (:components "RELEASE-NOTES" "s-doc.txt" "ChangeLog" "s-install.lisp" "s-test.lisp" ))))
-                "~/Code/Lisp/mudballs/previous/sysdef.asdf.0.1.mb")
+(in-package :sysdef-user)
+
+(mudballs-presenter::release-system '(define-system :mudballs ()
+                                       (:author "Sean Ross")
+                                       (:supports (:implementation :lispworks :sbcl :cmucl :clisp :openmcl :scl :allegrocl))
+                                       (:contact "sross@common-lisp.net")
+                                       (:version 0 3 0)
+                                       (:config-file "~;.mudballs")
+                                       (:preferences "~;.mudballs.prefs")
+                                       (:components "sysdef" "mudballs"))
+                                    "/tmp/mudballs.0.3.0.mb")
 
 (add-project "series"
              "http://sourceforge.net/mail/?group_id=3235"
@@ -204,9 +207,9 @@ Series is the culmination of many years of design and use of this approach, duri
 
 
              
-             
+
 
 |#
 
 
-;; EOF
+;; eof
