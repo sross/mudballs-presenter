@@ -183,14 +183,11 @@ a solution found to deliver the systems
 #|
 (in-package :sysdef-user)
 
-(mudballs-presenter::release-system '(define-system :mudballs ()
-                                       (:author "Sean Ross")
-                                       (:supports (:implementation :lispworks :sbcl :cmucl :clisp :openmcl :scl :allegrocl))
-                                       (:contact "sross@common-lisp.net")
-                                       (:version 0 3 0)
-                                       (:config-file "~;.mudballs")
-                                       (:preferences "~;.mudballs.prefs")
-                                       (:components "sysdef" "mudballs"))
+(mudballs-presenter::release-system '(MB.SYSDEF:DEFINE-SYSTEM :TRIVIAL-GRAY-STREAMS
+                                         (SERIAL-SYSTEM)
+                                       (:VERSION 2008 11 2)
+                                       (:COMPONENTS "package" "mixin"))
+                                    "/tmp/trivial-gray-streams.2008.11.2.mb")
                                     "/tmp/mudballs.0.3.0.mb")
 
 (add-project "series"

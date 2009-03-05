@@ -256,8 +256,6 @@ form which is a define-system-template whose first argument is name= the name of
     (copy-in-system root core))
   (create-sysdef-file root host url-dir-list contact))
 
-;(create-mudballs-release "mudballs.com" '("official") "sross@mudballs.com" :root "~/tmp/")
-
 (defun extract-tarball (tarball target-dir)
   (gzip-stream:with-open-gzip-file (ins tarball)
     (archive:with-open-archive (archive ins)
@@ -265,17 +263,18 @@ form which is a define-system-template whose first argument is name= the name of
         (archive:do-archive-entries (entry archive) 
           (archive:extract-entry archive entry))))))
 
+;(create-mudballs-release "mudballs.com" '("official") "sross@mudballs.com" :root "~/tmp/")
+
 (defun create-sysdef-file (root host url-dir-list contact)
   (release-sysdef-file (merge-pathnames (make-pathname :directory (cons :relative url-dir-list) :name "mudballs" :type "lisp")
                                         (relative-directory root "mudballs" "system-definitions"))
                        (format nil "http://~A/~A" host (namestring (make-pathname :directory (cons :relative url-dir-list))))
                        contact
                        :errorp t))
-
+                   
 (defun copy-in-system (root system-name)
   (let* ((system (mb:find-system system-name))
-         (system-root (merge-pathnames (enough-namestring (sysdef:component-pathname system)
-                                                          sysdef:*systems-path*)
+         (system-root (merge-pathnames (make-pathname :directory (list :relative (string-downcase (sysdef:name-of system)) (sysdef::version-string system)))
                                        (relative-directory root "mudballs" "systems")))
          (mudball-file (project-mudball-file (make-instance 'project :path (project-path (string-downcase system-name)))
                                              (sysdef::version-string system))))
@@ -327,7 +326,7 @@ form which is a define-system-template whose first argument is name= the name of
 (defun copy-directory (from to)
   (walk-directory from
                   #'(lambda (x)
-                      (let ((destination (merge-pathnames (enough-namestring x from)
+                      (let ((destination (merge-pathnames (enough-namestring x (truename from))
                                                           to)))
                         (ensure-directories-exist destination)
                         (copy-file x destination)))))
