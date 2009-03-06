@@ -271,9 +271,12 @@ form which is a define-system-template whose first argument is name= the name of
                        (format nil "http://~A/~A" host (namestring (make-pathname :directory (cons :relative url-dir-list))))
                        contact
                        :errorp t))
-                   
+
+(defun latest-version (system-name)
+  (first (mb.sysdef:systems-for system-name)))
+  
 (defun copy-in-system (root system-name)
-  (let* ((system (mb:find-system system-name))
+  (let* ((system (latest-version system-name))
          (system-root (merge-pathnames (make-pathname :directory (list :relative (string-downcase (sysdef:name-of system)) (sysdef::version-string system)))
                                        (relative-directory root "mudballs" "systems")))
          (mudball-file (project-mudball-file (make-instance 'project :path (project-path (string-downcase system-name)))
